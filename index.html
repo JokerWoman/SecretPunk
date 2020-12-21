@@ -5,15 +5,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="./custom.css" />
+    <link rel="stylesheet" href="./css/custom.css" />
     <title>Secret Punk</title>
 </head>
 
 <body onload="init()" >
     <canvas id="webGLCanvas"></canvas>
+    <!-- Permite criar e renderizar scenários 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+
+    <!-- Permite importar modelos 3D com formato GLTF -->
     <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="app.js"></script>
+    
+    <!-- Permite adicionar dom events aos modelos 3D, por exemplo, click, mouse over, etc etc -->
+    <script src='https://rawgit.com/jeromeetienne/threex.domevents/master/threex.domevents.js'></script>
+
+    <script src="./js/app.js"></script>
 </body>
 
 </html>
