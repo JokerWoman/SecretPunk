@@ -8,6 +8,10 @@ let cafetera, cafeteraScene;
 let ovo, ovoScene;
 let bolacha, bolachaScene;
 let papel, papelScene;
+let mascara, mascaraScene;
+let robot, robotScene;
+let xadrez, xadrezScene;
+let holograma, hologramaScene;
 
 let canvas;
 let textoObjectoPerdido1CheckMesh, textoObjectoPerdido2CheckMesh;
@@ -35,6 +39,8 @@ function init() {
 
     scene.add(camera);
 
+    let controls = new THREE.OrbitControls(camera);
+    controls.addEventListener('change', function() { renderer.render(scene, camera); });
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
     const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
 
@@ -73,8 +79,50 @@ function init() {
             size: 0.4,
             height: 0.01,
         });
+        const textGeometryObjecto2 = new THREE.TextGeometry("Mascara", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
+        const textGeometryObjecto3 = new THREE.TextGeometry("Robot", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
+
+        const textGeometryObjecto4 = new THREE.TextGeometry("Xadrez", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
+        const textGeometryObjecto5 = new THREE.TextGeometry("Holograma", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
 
         const textGeometryObjecto1Check = new THREE.TextGeometry("X", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
+
+        const textGeometryObjecto2Check = new THREE.TextGeometry("X", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
+        const textGeometryObjecto3Check = new THREE.TextGeometry("X", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
+        const textGeometryObjecto4Check = new THREE.TextGeometry("X", {
+            font: font,
+            size: 0.4,
+            height: 0.01,
+        });
+        const textGeometryObjecto5Check = new THREE.TextGeometry("X", {
             font: font,
             size: 0.4,
             height: 0.01,
@@ -101,6 +149,51 @@ function init() {
         scene.add(textoObjectoPerdido1CheckMesh);
         textoObjectoPerdido1CheckMesh.visible = false
 
+        /* Adicionar o objeto 2 */
+        let textoObjectoPerdido2Mesh = new THREE.Mesh(textGeometryObjecto2, textMaterial);
+        textoObjectoPerdido2Mesh.position.set(5, 7.5, 1);
+        scene.add(textoObjectoPerdido2Mesh);
+
+        /* Marcar como found */
+        textoObjectoPerdido2CheckMesh = new THREE.Mesh(textGeometryObjecto2Check, textMaterial2);
+        textoObjectoPerdido2CheckMesh.position.set(4, 7.5, 1);
+        scene.add(textoObjectoPerdido2CheckMesh);
+        textoObjectoPerdido2CheckMesh.visible = false
+
+        /* Adicionar o objeto 3 */
+        let textoObjectoPerdido3Mesh = new THREE.Mesh(textGeometryObjecto3, textMaterial);
+        textoObjectoPerdido3Mesh.position.set(5, 6.5, 1);
+        scene.add(textoObjectoPerdido3Mesh);
+
+        /* Marcar como found */
+        textoObjectoPerdido3CheckMesh = new THREE.Mesh(textGeometryObjecto3Check, textMaterial2);
+        textoObjectoPerdido3CheckMesh.position.set(4, 6.5, 1);
+        scene.add(textoObjectoPerdido3CheckMesh);
+        textoObjectoPerdido3CheckMesh.visible = false
+
+        /* Adicionar o objeto 4 */
+        let textoObjectoPerdido4Mesh = new THREE.Mesh(textGeometryObjecto4, textMaterial);
+        textoObjectoPerdido4Mesh.position.set(5, 5.5, 1);
+        scene.add(textoObjectoPerdido4Mesh);
+
+        /* Marcar como found */
+        textoObjectoPerdido4CheckMesh = new THREE.Mesh(textGeometryObjecto4Check, textMaterial2);
+        textoObjectoPerdido4CheckMesh.position.set(4, 5.5, 1);
+        scene.add(textoObjectoPerdido4CheckMesh);
+        textoObjectoPerdido4CheckMesh.visible = false
+
+        /* Adicionar o objeto 4 */
+        let textoObjectoPerdido5Mesh = new THREE.Mesh(textGeometryObjecto5, textMaterial);
+        textoObjectoPerdido5Mesh.position.set(5, 4.5, 1);
+        scene.add(textoObjectoPerdido5Mesh);
+
+        /* Marcar como found */
+        textoObjectoPerdido5CheckMesh = new THREE.Mesh(textGeometryObjecto5Check, textMaterial2);
+        textoObjectoPerdido5CheckMesh.position.set(4, 4.5, 1);
+        scene.add(textoObjectoPerdido5CheckMesh);
+        textoObjectoPerdido5CheckMesh.visible = false
+
+
     });
 
     /* Carregar a planta */
@@ -108,9 +201,9 @@ function init() {
         scene.add(gltf.scene);
         plantaScene = gltf.scene
         planta = gltf.scene.children[0];
-        planta.position.set(-4.000, 0.300, -5);
+        planta.position.set(-2.460, 0.300, -8.720);
         planta.rotation.set(-4.659, -Math.PI, 0.000);
-        planta.scale.set(0.5, 0.5, 0.5)
+        planta.scale.set(0.3, 0.3, 0.3)
         gltf.scene.position.set(-5.390, 0, 0);
 
         domEvents.addEventListener(planta, 'click', event => {
@@ -120,6 +213,74 @@ function init() {
         });
 
     });
+
+    loader.load("./GLTFs/sceneLevelOne/mascara/scene.gltf", function(gltf) {
+        scene.add(gltf.scene);
+        mascaraScene = gltf.scene
+        mascara = gltf.scene.children[0];
+        mascara.position.set(17.330, 5.780, -11.700);
+        mascara.rotation.set(4.600, 0, -1.030);
+        mascara.scale.set(0.010, 0.010, 0.010)
+        gltf.scene.position.set(-5.390, 0, 0);
+
+        domEvents.addEventListener(mascara, 'click', event => {
+            console.log("Mascara foi encontrada!");
+            scene.remove(mascaraScene)
+            textoObjectoPerdido2CheckMesh.visible = true
+        });
+
+    });
+    loader.load("./GLTFs/sceneLevelOne/robot/scene.gltf", function(gltf) {
+        scene.add(gltf.scene);
+        robotScene = gltf.scene
+        robot = gltf.scene.children[0];
+        robot.position.set(11.180, 0.520, -7.670);
+        robot.rotation.set(-1.683, 0, -1.030);
+        robot.scale.set(0.300, 0.300, 0.300)
+        gltf.scene.position.set(-5.390, 0, 0);
+
+        domEvents.addEventListener(robot, 'click', event => {
+            console.log("Robot foi encontrada!");
+            scene.remove(robotScene)
+            textoObjectoPerdido3CheckMesh.visible = true
+        });
+
+    });
+
+    loader.load("./GLTFs/sceneLevelOne/xadrez/scene.gltf", function(gltf) {
+        scene.add(gltf.scene);
+        xadrezScene = gltf.scene
+        xadrez = gltf.scene.children[0];
+        xadrez.position.set(1.310, 2.050, -7.400);
+        xadrez.rotation.set(-1.510, 0, -1.030);
+        xadrez.scale.set(1, 1, 1)
+        gltf.scene.position.set(-5.390, 0, 0);
+
+        domEvents.addEventListener(xadrez, 'click', event => {
+            console.log("xadrez foi encontrada!");
+            scene.remove(xadrezScene)
+            textoObjectoPerdido4CheckMesh.visible = true
+        });
+
+    });
+
+    loader.load("./GLTFs/sceneLevelOne/holograma/scene.gltf", function(gltf) {
+        scene.add(gltf.scene);
+        hologramaScene = gltf.scene
+        holograma = gltf.scene.children[0];
+        holograma.position.set(11.420, 1.290, -11.320);
+        holograma.rotation.set(-1.510, 0, -1.030);
+        holograma.scale.set(0.005, 0.005, 0.005)
+        gltf.scene.position.set(-5.390, 0, 0);
+
+        domEvents.addEventListener(holograma, 'click', event => {
+            console.log("holograma foi encontrada!");
+            scene.remove(hologramaScene)
+            textoObjectoPerdido5CheckMesh.visible = true
+        });
+
+    });
+
 
 
     animate();
@@ -391,6 +552,25 @@ function init2() {
         });
 
     });
+
+    loader.load("./GLTFs/sceneLevelTwo/papel/scene.gltf", function(gltf) {
+        scene.add(gltf.scene);
+        papelScene = gltf.scene
+        papel = gltf.scene.children[0];
+        papel.position.set(17.510, 2.110, -9.370);
+        papel.rotation.set(-4.659, -Math.PI, 0.000);
+        papel.scale.set(0.010, 0.010, 0.030)
+        gltf.scene.position.set(-5.390, 0, 0);
+
+        domEvents.addEventListener(papel, 'click', event => {
+            console.log("Papel foi encontrada!");
+            scene.remove(papelScene)
+            textoObjectoPerdido5CheckMesh.visible = true
+        });
+
+    });
+
+
 
 
     animate();
