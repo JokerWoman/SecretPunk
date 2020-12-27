@@ -1,64 +1,135 @@
-let camera;
+let camera1, camera2;
 let renderer;
-let scene;
-let house;
-let planta, plantaScene;
-let cereal, cerealScene;
-let cafetera, cafeteraScene;
-let ovo, ovoScene;
-let bolacha, bolachaScene;
-let papel, papelScene;
-let mascara, mascaraScene;
-let robot, robotScene;
-let xadrez, xadrezScene;
-let holograma, hologramaScene;
+let scene1, scene2;
+
+let SCENES = {
+    SCENE_ONE:  1, 
+    SCENE_TWO:  2
+  };
+
+let OBJECTS_PER_SCENE = {
+    SCENE_ONE:  5, 
+    SCENE_TWO:  5
+};
+
+let SCENE_ONE_OBJECTS = {
+    PLANTA:  0, 
+    MASCARA:  1,
+    ROBOT:  2,
+    XADREZ:  3,
+    HOLOGRAMA:  4,
+};
+
+let SCENE_TWO_OBJECTS = {
+    CEREAL:  0, 
+    CAFETEIRA:  1,
+    BOLACHAS:  2,
+    OVO_PARTIDO:  3,
+    PAPEL:  4,
+};
+
+let GLTF_OBJECTS_IDENTIFIER = {
+    OBJECT:  0, 
+    SCENE:  1,
+    CHECK_MESH:  2
+};
+
+let sceneOneObjects = []
+let sceneTwoObjects = []
+
+let currentScene = SCENES.SCENE_ONE
+let currentSceneObjectosFound = 0
 
 let canvas;
-let textoObjectoPerdido1CheckMesh, textoObjectoPerdido2CheckMesh;
 
-function updateCanvasFullScreen() {
+function UpdateCanvasFullScreen() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight
+}
+
+function InitializeSceneObjetcsArray(scene)
+{
+    if(scene == SCENES.SCENE_ONE)
+    {
+        sceneOneObjects = new Array(OBJECTS_PER_SCENE.SCENE_ONE);
+
+        for(let i = 0; i < sceneOneObjects.length; i++)
+        {
+            sceneOneObjects[i] = new Array(3); /* GLTF_OBJECTS_IDENTIFIER para aceder a cada um*/ 
+        }
+    }
+    else if(scene == SCENES.SCENE_TWO)
+    {
+        sceneTwoObjects = new Array(OBJECTS_PER_SCENE.SCENE_TWO);
+
+        for(let i = 0; i < sceneTwoObjects.length; i++)
+        {
+            sceneTwoObjects[i] = new Array(3); /* GLTF_OBJECTS_IDENTIFIER para aceder a cada um*/ 
+        }
+    }
+
 }
 
 function init() {
     canvas = document.getElementById("webGLCanvas");
 
-    updateCanvasFullScreen()
+    UpdateCanvasFullScreen()
 
     /* Renderer */
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
     renderer.setSize(canvas.width, canvas.height);
 
+    CreateSceneOne();
+
+    animate();
+}
+
+function CreateTextGeometry(titulo, fonte, tamanho, altura)
+{
+    return new THREE.TextGeometry(titulo, {
+        font: fonte,
+        size: tamanho,
+        height: altura
+    });
+}
+
+function CreateTextBasicMaterial(cor)
+{
+    return new THREE.MeshBasicMaterial({ color: cor });
+}
+
+function CreateSceneOne()
+{
+    /* Inicializar o Array de Objectos e o check de cada um deles */
+    InitializeSceneObjetcsArray(SCENES.SCENE_ONE)
+
     /* Criar Scene */
-    scene = new THREE.Scene();
+    scene1 = new THREE.Scene();
 
     /* Criar Camera */
-    camera = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    camera.position.set(-2.230, 4.030, 8.310);
+    camera1 = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera1.position.set(-2.230, 4.030, 8.310);
 
-    scene.add(camera);
+    scene1.add(camera1);
 
-    let controls = new THREE.OrbitControls(camera);
-    controls.addEventListener('change', function() { renderer.render(scene, camera); });
+    //let controls = new THREE.OrbitControls(camera);
+    //controls.addEventListener('change', function() { renderer.render(scene, camera); });
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
-
+    const domEvents = new THREEx.DomEvents(camera1, renderer.domElement);
 
     /* Criar Luz Ambiente */
     const ambient = new THREE.AmbientLight(0x404040, 2);
-    scene.add(ambient);
+    scene1.add(ambient);
 
     /* Criar Luz Direcional */
     const light = new THREE.DirectionalLight(0xffffff, 2);
     light.position.set(50, 50, 100);
-    scene.add(light);
+    scene1.add(light);
 
     /* Carregar a sala */
     let loader = new THREE.GLTFLoader();
     loader.load("./GLTFs/sceneLevelOne/house/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        house = gltf.scene.children[0];
+        scene1.add(gltf.scene);
         gltf.scene.position.set(-5.390, -0.290, -4.640);
         gltf.scene.rotation.set(0, 0.5, 0);
     });
@@ -66,243 +137,173 @@ function init() {
     /* Carregar a fonte e alguns textos */
     const loaderFont = new THREE.FontLoader();
 
-    let myFont = loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
-
-        const textGeometry = new THREE.TextGeometry("Objectos Perdidos:", {
-            font: font,
-            size: 0.6,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto1 = new THREE.TextGeometry("Planta", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto2 = new THREE.TextGeometry("Mascara", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto3 = new THREE.TextGeometry("Robot", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto4 = new THREE.TextGeometry("Xadrez", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto5 = new THREE.TextGeometry("Holograma", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto1Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto2Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto3Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto4Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto5Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        let textMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff3535 });
-
-
-        let textMaterial = new THREE.MeshBasicMaterial({ color: 0x191919 });
-
+    loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
         /* Adicionar o titulo de objectos perdidos */
-        let textoObjectosPerdidosMesh = new THREE.Mesh(textGeometry, textMaterial);
+        let textoObjectosPerdidosMesh = new THREE.Mesh(CreateTextGeometry("Objectos Perdidos:", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectosPerdidosMesh.position.set(5, 10, 0);
-        scene.add(textoObjectosPerdidosMesh);
+        scene1.add(textoObjectosPerdidosMesh);
 
-        /* Adicionar o objeto 1 */
-        let textoObjectoPerdido1Mesh = new THREE.Mesh(textGeometryObjecto1, textMaterial);
+        /* Texto da planta */
+        let textoObjectoPerdido1Mesh = new THREE.Mesh(CreateTextGeometry("Planta", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido1Mesh.position.set(5, 8.5, 1);
-        scene.add(textoObjectoPerdido1Mesh);
+        scene1.add(textoObjectoPerdido1Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido1CheckMesh = new THREE.Mesh(textGeometryObjecto1Check, textMaterial2);
-        textoObjectoPerdido1CheckMesh.position.set(4, 8.5, 1);
-        scene.add(textoObjectoPerdido1CheckMesh);
-        textoObjectoPerdido1CheckMesh.visible = false
+        /* Check da planta encontrada */
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 8.5, 1);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 2 */
-        let textoObjectoPerdido2Mesh = new THREE.Mesh(textGeometryObjecto2, textMaterial);
+        /* Texto da mascara */
+        let textoObjectoPerdido2Mesh = new THREE.Mesh(CreateTextGeometry("Mascara", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido2Mesh.position.set(5, 7.5, 1);
-        scene.add(textoObjectoPerdido2Mesh);
+        scene1.add(textoObjectoPerdido2Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido2CheckMesh = new THREE.Mesh(textGeometryObjecto2Check, textMaterial2);
-        textoObjectoPerdido2CheckMesh.position.set(4, 7.5, 1);
-        scene.add(textoObjectoPerdido2CheckMesh);
-        textoObjectoPerdido2CheckMesh.visible = false
+        /* Check da Mascara encontrada */
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 7.5, 1);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 3 */
-        let textoObjectoPerdido3Mesh = new THREE.Mesh(textGeometryObjecto3, textMaterial);
+        /* Texto do robot */
+        let textoObjectoPerdido3Mesh = new THREE.Mesh(CreateTextGeometry("Robot", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido3Mesh.position.set(5, 6.5, 1);
-        scene.add(textoObjectoPerdido3Mesh);
+        scene1.add(textoObjectoPerdido3Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido3CheckMesh = new THREE.Mesh(textGeometryObjecto3Check, textMaterial2);
-        textoObjectoPerdido3CheckMesh.position.set(4, 6.5, 1);
-        scene.add(textoObjectoPerdido3CheckMesh);
-        textoObjectoPerdido3CheckMesh.visible = false
+        /* Check do robot encontrado */
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 6.5, 1);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 4 */
-        let textoObjectoPerdido4Mesh = new THREE.Mesh(textGeometryObjecto4, textMaterial);
+        /* Texto do xadrez */
+        let textoObjectoPerdido4Mesh = new THREE.Mesh(CreateTextGeometry("Xadrez", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido4Mesh.position.set(5, 5.5, 1);
-        scene.add(textoObjectoPerdido4Mesh);
+        scene1.add(textoObjectoPerdido4Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido4CheckMesh = new THREE.Mesh(textGeometryObjecto4Check, textMaterial2);
-        textoObjectoPerdido4CheckMesh.position.set(4, 5.5, 1);
-        scene.add(textoObjectoPerdido4CheckMesh);
-        textoObjectoPerdido4CheckMesh.visible = false
+        /* Ceck do xadrez encontrado */
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 5.5, 1);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 4 */
-        let textoObjectoPerdido5Mesh = new THREE.Mesh(textGeometryObjecto5, textMaterial);
+        /* Texto Holograma */
+        let textoObjectoPerdido5Mesh = new THREE.Mesh(CreateTextGeometry("Holograma", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido5Mesh.position.set(5, 4.5, 1);
-        scene.add(textoObjectoPerdido5Mesh);
+        scene1.add(textoObjectoPerdido5Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido5CheckMesh = new THREE.Mesh(textGeometryObjecto5Check, textMaterial2);
-        textoObjectoPerdido5CheckMesh.position.set(4, 4.5, 1);
-        scene.add(textoObjectoPerdido5CheckMesh);
-        textoObjectoPerdido5CheckMesh.visible = false
-
-
+        /* Check do holograma encontrado */
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 4.5, 1);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
     });
 
     /* Carregar a planta */
     loader.load("./GLTFs/sceneLevelOne/planta/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        plantaScene = gltf.scene
-        planta = gltf.scene.children[0];
-        planta.position.set(-2.460, 0.300, -8.720);
-        planta.rotation.set(-4.659, -Math.PI, 0.000);
-        planta.scale.set(0.3, 0.3, 0.3)
-        gltf.scene.position.set(-5.390, 0, 0);
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
 
-        domEvents.addEventListener(planta, 'click', event => {
-            console.log("Planta foi encontrada!");
-            scene.remove(plantaScene)
-            textoObjectoPerdido1CheckMesh.visible = true
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(-2.460, 0.300, -8.720);
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-4.659, -Math.PI, 0.000);
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.3, 0.3, 0.3)
+        sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene1.remove(sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneOneObjects[SCENE_ONE_OBJECTS.PLANTA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
 
     });
 
     loader.load("./GLTFs/sceneLevelOne/mascara/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        mascaraScene = gltf.scene
-        mascara = gltf.scene.children[0];
-        mascara.position.set(17.330, 5.780, -11.700);
-        mascara.rotation.set(4.600, 0, -1.030);
-        mascara.scale.set(0.010, 0.010, 0.010)
-        gltf.scene.position.set(-5.390, 0, 0);
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
 
-        domEvents.addEventListener(mascara, 'click', event => {
-            console.log("Mascara foi encontrada!");
-            scene.remove(mascaraScene)
-            textoObjectoPerdido2CheckMesh.visible = true
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(17.330, 5.780, -11.700);
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(4.600, 0, -1.030);
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.010, 0.010, 0.010)
+        sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene1.remove(sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneOneObjects[SCENE_ONE_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
 
     });
     loader.load("./GLTFs/sceneLevelOne/robot/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        robotScene = gltf.scene
-        robot = gltf.scene.children[0];
-        robot.position.set(11.180, 0.520, -7.670);
-        robot.rotation.set(-1.683, 0, -1.030);
-        robot.scale.set(0.300, 0.300, 0.300)
-        gltf.scene.position.set(-5.390, 0, 0);
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
 
-        domEvents.addEventListener(robot, 'click', event => {
-            console.log("Robot foi encontrada!");
-            scene.remove(robotScene)
-            textoObjectoPerdido3CheckMesh.visible = true
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(11.180, 0.520, -7.670);
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.683, 0, -1.030);
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.300, 0.300, 0.300)
+        sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene1.remove(sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneOneObjects[SCENE_ONE_OBJECTS.ROBOT][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
 
     });
 
     loader.load("./GLTFs/sceneLevelOne/xadrez/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        xadrezScene = gltf.scene
-        xadrez = gltf.scene.children[0];
-        xadrez.position.set(1.310, 2.050, -7.400);
-        xadrez.rotation.set(-1.510, 0, -1.030);
-        xadrez.scale.set(1, 1, 1)
-        gltf.scene.position.set(-5.390, 0, 0);
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
 
-        domEvents.addEventListener(xadrez, 'click', event => {
-            console.log("xadrez foi encontrada!");
-            scene.remove(xadrezScene)
-            textoObjectoPerdido4CheckMesh.visible = true
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(1.310, 2.050, -7.400);
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.510, 0, -1.030);
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(1, 1, 1)
+        sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene1.remove(sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneOneObjects[SCENE_ONE_OBJECTS.XADREZ][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
 
     });
 
     loader.load("./GLTFs/sceneLevelOne/holograma/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        hologramaScene = gltf.scene
-        holograma = gltf.scene.children[0];
-        holograma.position.set(11.420, 1.290, -11.320);
-        holograma.rotation.set(-1.510, 0, -1.030);
-        holograma.scale.set(0.005, 0.005, 0.005)
-        gltf.scene.position.set(-5.390, 0, 0);
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
 
-        domEvents.addEventListener(holograma, 'click', event => {
-            console.log("holograma foi encontrada!");
-            scene.remove(hologramaScene)
-            textoObjectoPerdido5CheckMesh.visible = true
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(11.420, 1.290, -11.320);
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.510, 0, -1.030);
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.005, 0.005, 0.005)
+        sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene1.add(sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene1.remove(sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneOneObjects[SCENE_ONE_OBJECTS.HOLOGRAMA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
 
     });
-
-
-
-    animate();
 }
 
-function init2() {
-    canvas = document.getElementById("webGLCanvas");
+function CreateSceneTwo() {
 
-    updateCanvasFullScreen()
-
-    /* Renderer */
-    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-    renderer.setSize(canvas.width, canvas.height);
+    /* Inicializar o Array de Objectos e o check de cada um deles */
+    InitializeSceneObjetcsArray(SCENES.SCENE_TWO)
 
     /* Criar Scene */
-    scene = new THREE.Scene();
+    scene2 = new THREE.Scene();
+    
 
     /* Criar Camera */
-    camera = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    camera.position.set(-2.230, 4.030, 8.310);
+    camera2 = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera2.position.set(-2.230, 4.030, 8.310);
 
-    scene.add(camera);
+    scene2.add(camera2);
 
     /*
         ##################################
@@ -314,23 +315,22 @@ function init2() {
 
 
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+    const domEvents = new THREEx.DomEvents(camera2, renderer.domElement);
 
 
     /* Criar Luz Ambiente */
     const ambient = new THREE.AmbientLight(0x404040, 2);
-    scene.add(ambient);
+    scene2.add(ambient);
 
     /* Criar Luz Direcional */
     const light = new THREE.DirectionalLight(0xffffff, 2);
     light.position.set(50, 50, 100);
-    scene.add(light);
+    scene2.add(light);
 
     /* Carregar a sala */
     let loader = new THREE.GLTFLoader();
     loader.load("./GLTFs/sceneLevelTwo/cozinha/scene_Kitchen.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        house = gltf.scene.children[0];
+        scene2.add(gltf.scene);
         gltf.scene.position.set(-5.390, -0.290, -4.640);
         gltf.scene.rotation.set(0, 0.5, 0);
     });
@@ -338,256 +338,190 @@ function init2() {
     /* Carregar a fonte e alguns textos */
     const loaderFont = new THREE.FontLoader();
 
-    let myFont = loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
-
-        const textGeometry = new THREE.TextGeometry("Objectos Perdidos:", {
-            font: font,
-            size: 0.6,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto1 = new THREE.TextGeometry("Cereal", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto2 = new THREE.TextGeometry("Cafetera", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto3 = new THREE.TextGeometry("Bolachas", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto4 = new THREE.TextGeometry("Ovo Partido", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto5 = new THREE.TextGeometry("Papel", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto1Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto2Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-        const textGeometryObjecto3Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto4Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-        const textGeometryObjecto5Check = new THREE.TextGeometry("X", {
-            font: font,
-            size: 0.4,
-            height: 0.01,
-        });
-
-
-
-        let textMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff3535 });
-
-
-        let textMaterial = new THREE.MeshBasicMaterial({ color: 0x191919 });
+    loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
 
         /* Adicionar o titulo de objectos perdidos */
-        let textoObjectosPerdidosMesh = new THREE.Mesh(textGeometry, textMaterial);
+        let textoObjectosPerdidosMesh = new THREE.Mesh(CreateTextGeometry("Objectos Perdidos:", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectosPerdidosMesh.position.set(5, 10, 0);
-        scene.add(textoObjectosPerdidosMesh);
+        scene2.add(textoObjectosPerdidosMesh);
 
-        /* Adicionar o objeto 1 */
-        let textoObjectoPerdido1Mesh = new THREE.Mesh(textGeometryObjecto1, textMaterial);
+        /* Texto do cereal */
+        let textoObjectoPerdido1Mesh = new THREE.Mesh(CreateTextGeometry("Cereal", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido1Mesh.position.set(5, 8.5, 0);
-        scene.add(textoObjectoPerdido1Mesh);
+        scene2.add(textoObjectoPerdido1Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido1CheckMesh = new THREE.Mesh(textGeometryObjecto1Check, textMaterial2);
-        textoObjectoPerdido1CheckMesh.position.set(4, 8.5, 0);
-        scene.add(textoObjectoPerdido1CheckMesh);
-        textoObjectoPerdido1CheckMesh.visible = false
+        /* Check do cereal encontrado */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 8.5, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 2 */
-        let textoObjectoPerdido2Mesh = new THREE.Mesh(textGeometryObjecto2, textMaterial);
+        /* Texto da cafeteira */
+        let textoObjectoPerdido2Mesh = new THREE.Mesh(CreateTextGeometry("Cafeteira", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido2Mesh.position.set(5, 7.5, 0);
-        scene.add(textoObjectoPerdido2Mesh);
+        scene2.add(textoObjectoPerdido2Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido2CheckMesh = new THREE.Mesh(textGeometryObjecto2Check, textMaterial2);
-        textoObjectoPerdido2CheckMesh.position.set(4, 7.5, 0);
-        scene.add(textoObjectoPerdido2CheckMesh);
-        textoObjectoPerdido2CheckMesh.visible = false
+        /* Check da cafeteira encontrada */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 7.5, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 3 */
-        let textoObjectoPerdido3Mesh = new THREE.Mesh(textGeometryObjecto3, textMaterial);
+        /* Texto das bolachas */
+        let textoObjectoPerdido3Mesh = new THREE.Mesh(CreateTextGeometry("Bolachas", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido3Mesh.position.set(5, 6.5, 0);
-        scene.add(textoObjectoPerdido3Mesh);
+        scene2.add(textoObjectoPerdido3Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido3CheckMesh = new THREE.Mesh(textGeometryObjecto3Check, textMaterial2);
-        textoObjectoPerdido3CheckMesh.position.set(4, 6.5, 0);
-        scene.add(textoObjectoPerdido3CheckMesh);
-        textoObjectoPerdido3CheckMesh.visible = false
+        /* Check das bolachas encontradas */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 6.5, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 4 */
-        let textoObjectoPerdido4Mesh = new THREE.Mesh(textGeometryObjecto4, textMaterial);
+        /* Texto do ovo partido */
+        let textoObjectoPerdido4Mesh = new THREE.Mesh(CreateTextGeometry("Ovo Partido", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido4Mesh.position.set(5, 5.5, 0);
-        scene.add(textoObjectoPerdido4Mesh);
+        scene2.add(textoObjectoPerdido4Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido4CheckMesh = new THREE.Mesh(textGeometryObjecto4Check, textMaterial2);
-        textoObjectoPerdido4CheckMesh.position.set(4, 5.5, 0);
-        scene.add(textoObjectoPerdido4CheckMesh);
-        textoObjectoPerdido4CheckMesh.visible = false
+        /* Check do ovo partido encontrado */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 5.5, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
-        /* Adicionar o objeto 5 */
-        let textoObjectoPerdido5Mesh = new THREE.Mesh(textGeometryObjecto5, textMaterial);
+        /* Texto do papel */
+        let textoObjectoPerdido5Mesh = new THREE.Mesh(CreateTextGeometry("Papel", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectoPerdido5Mesh.position.set(5, 4.5, 0);
-        scene.add(textoObjectoPerdido5Mesh);
+        scene2.add(textoObjectoPerdido5Mesh);
 
-        /* Marcar como found */
-        textoObjectoPerdido5CheckMesh = new THREE.Mesh(textGeometryObjecto5Check, textMaterial2);
-        textoObjectoPerdido5CheckMesh.position.set(4, 4.5, 0);
-        scene.add(textoObjectoPerdido5CheckMesh);
-        textoObjectoPerdido5CheckMesh.visible = false
+        /* Check do papel encontrado */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 4.5, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
     });
 
     /* Carregar a Cereal */
     loader.load("./GLTFs/sceneLevelTwo/cereal/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        cerealScene = gltf.scene
-        cereal = gltf.scene.children[0];
-        cereal.position.set(11.310, 2.070, -10);
-        cereal.rotation.set(-4.659, -Math.PI, -Math.PI);
-        cereal.scale.set(0.15, 0.1, 0.3)
-        gltf.scene.position.set(-5.390, 0, 0);
-
-        domEvents.addEventListener(cereal, 'click', event => {
-            console.log("Cereal foi encontrada!");
-            scene.remove(cerealScene)
-            textoObjectoPerdido1CheckMesh.visible = true
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+    
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(11.310, 2.070, -10);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-4.659, -Math.PI, -Math.PI);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.15, 0.1, 0.3)
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+    
+        domEvents.addEventListener(sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene2.remove(sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneTwoObjects[SCENE_TWO_OBJECTS.CEREAL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
 
     });
-    loader.load("./GLTFs/sceneLevelTwo/cafetera/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        cafeteraScene = gltf.scene
-        cafetera = gltf.scene.children[0];
-        cafetera.position.set(6.820, 2.590, -13.270);
-        cafetera.rotation.set(-4.659, -Math.PI, 0.000);
-        cafetera.scale.set(0.030, 0.030, 0.030)
-        gltf.scene.position.set(-5.390, 0, 0);
 
-        domEvents.addEventListener(cafetera, 'click', event => {
-            console.log("Cafetera foi encontrada!");
-            scene.remove(cafeteraScene)
-            textoObjectoPerdido2CheckMesh.visible = true
+    loader.load("./GLTFs/sceneLevelTwo/cafetera/scene.gltf", function(gltf) {
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+    
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(6.820, 2.590, -13.270);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-4.659, -Math.PI, 0.000);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.030, 0.030, 0.030)
+        sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+    
+        domEvents.addEventListener(sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene2.remove(sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneTwoObjects[SCENE_TWO_OBJECTS.CAFETEIRA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
 
     });
     loader.load("./GLTFs/sceneLevelTwo/bolachas/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        bolachaScene = gltf.scene
-        bolacha = gltf.scene.children[0];
-        bolacha.position.set(9.880, 2.170, -15.070);
-        bolacha.rotation.set(-4.659, -Math.PI, 0.000);
-        bolacha.scale.set(0.030, 0.030, 0.030)
-        gltf.scene.position.set(-5.390, 0, 0);
-
-        domEvents.addEventListener(bolacha, 'click', event => {
-            console.log("Bolacha foi encontrada!");
-            scene.remove(bolachaScene)
-            textoObjectoPerdido3CheckMesh.visible = true
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+    
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(9.880, 2.170, -15.070);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-4.659, -Math.PI, 0.000);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.030, 0.030, 0.030)
+        sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+    
+        domEvents.addEventListener(sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene2.remove(sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneTwoObjects[SCENE_TWO_OBJECTS.BOLACHAS][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
-
     });
+
     loader.load("./GLTFs/sceneLevelTwo/ovo_partido/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        ovoScene = gltf.scene
-        ovo = gltf.scene.children[0];
-        ovo.position.set(4.100, 2.250, -9.920);
-        ovo.rotation.set(-4.659, -Math.PI, 0.000);
-        ovo.scale.set(0.001, 0.001, 0.001)
-        gltf.scene.position.set(-5.390, 0, 0);
-
-        domEvents.addEventListener(ovo, 'click', event => {
-            console.log("Ovo Partido foi encontrada!");
-            scene.remove(ovoScene)
-            textoObjectoPerdido4CheckMesh.visible = true
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+    
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(4.100, 2.250, -9.920);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-4.659, -Math.PI, 0.000);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.001, 0.001, 0.001)
+        sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+    
+        domEvents.addEventListener(sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene2.remove(sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneTwoObjects[SCENE_TWO_OBJECTS.OVO_PARTIDO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
-
     });
 
     loader.load("./GLTFs/sceneLevelTwo/papel/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        papelScene = gltf.scene
-        papel = gltf.scene.children[0];
-        papel.position.set(17.510, 2.110, -9.370);
-        papel.rotation.set(-4.659, -Math.PI, 0.000);
-        papel.scale.set(0.010, 0.010, 0.030)
-        gltf.scene.position.set(-5.390, 0, 0);
-
-        domEvents.addEventListener(papel, 'click', event => {
-            console.log("Papel foi encontrada!");
-            scene.remove(papelScene)
-            textoObjectoPerdido5CheckMesh.visible = true
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+    
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(17.510, 2.110, -9.370);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-4.659, -Math.PI, 0.000);
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.010, 0.010, 0.030)
+        sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
+        scene2.add(sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+    
+        domEvents.addEventListener(sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            currentSceneObjectosFound++
+            scene2.remove(sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.SCENE])
+            sceneTwoObjects[SCENE_TWO_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
         });
-
     });
-
-    loader.load("./GLTFs/sceneLevelTwo/papel/scene.gltf", function(gltf) {
-        scene.add(gltf.scene);
-        papelScene = gltf.scene
-        papel = gltf.scene.children[0];
-        papel.position.set(17.510, 2.110, -9.370);
-        papel.rotation.set(-4.659, -Math.PI, 0.000);
-        papel.scale.set(0.010, 0.010, 0.030)
-        gltf.scene.position.set(-5.390, 0, 0);
-
-        domEvents.addEventListener(papel, 'click', event => {
-            console.log("Papel foi encontrada!");
-            scene.remove(papelScene)
-            textoObjectoPerdido5CheckMesh.visible = true
-        });
-
-    });
-
-
-
-
-    animate();
 }
 
 
 function animate() {
     requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    
+    if(currentScene === SCENES.SCENE_ONE)
+    {
+        renderer.render(scene1, camera1);
+        if(currentSceneObjectosFound == sceneOneObjects.length)
+        {
+            CreateSceneTwo();
+            currentSceneObjectosFound = 0 // restart para a proxima scene
+            setTimeout(function(){currentScene = SCENES.SCENE_TWO}, 2000);
+        }
+    }else if(currentScene === SCENES.SCENE_TWO)
+    {
+        renderer.render(scene2, camera2);
+    }
 }
 
 function onWindowResize() {
     /* Sempre que a janela for resized actualizamos o tamanho do canvas */
-    updateCanvasFullScreen()
+    UpdateCanvasFullScreen()
 
-    camera.aspect = canvas.width / canvas.height;
-    camera.updateProjectionMatrix();
+    if(currentScene === SCENES.SCENE_ONE)
+    {
+        camera1.aspect = canvas.width / canvas.height;
+        camera1.updateProjectionMatrix();
+    }else if(currentScene === SCENES.SCENE_TWO)
+    {
+        camera2.aspect = canvas.width / canvas.height;
+        camera2.updateProjectionMatrix();
+    }
 
     renderer.setSize(canvas.width, canvas.height);
 }
