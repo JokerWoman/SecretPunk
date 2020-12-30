@@ -1,17 +1,20 @@
-let camera1, camera2, camera3;
+let camera1, camera2, camera3, camera4;
 let renderer;
-let scene1, scene2, scene3;
+let scene1, scene2, scene3, scene4;
 
 let SCENES = {
     SCENE_ONE: 1,
     SCENE_TWO: 2,
-    SCENE_THREE: 3
+    SCENE_THREE: 3,
+    SCENE_FOUR: 4
 };
 
 let OBJECTS_PER_SCENE = {
     SCENE_ONE: 5,
     SCENE_TWO: 5,
-    SCENE_THREE: 10
+    SCENE_THREE: 10,
+    SCENE_FOUR: 12
+
 };
 
 let SCENE_ONE_OBJECTS = {
@@ -43,6 +46,19 @@ let SCENE_THREE_OBJECTS = {
     WIG: 9
 };
 
+let SCENE_FOUR_OBJECTS = {
+    ALMOFADA: 0,
+    BRAÇO: 1,
+    CAMERA: 2,
+    GAMEBOY: 3,
+    KATANA: 4,
+    MASCARA: 5,
+    MONITOR: 6,
+    PISTOLA: 7,
+    POKEBALL: 8,
+    VR: 9
+};
+
 let GLTF_OBJECTS_IDENTIFIER = {
     OBJECT: 0,
     SCENE: 1,
@@ -52,6 +68,7 @@ let GLTF_OBJECTS_IDENTIFIER = {
 let sceneOneObjects = []
 let sceneTwoObjects = []
 let sceneThreeObjects = []
+let sceneFourObjects = []
 
 let currentScene = SCENES.SCENE_ONE
 let currentSceneObjectosFound = 0
@@ -81,6 +98,12 @@ function InitializeSceneObjetcsArray(scene) {
 
         for (let i = 0; i < sceneThreeObjects.length; i++) {
             sceneThreeObjects[i] = new Array(3); /* GLTF_OBJECTS_IDENTIFIER para aceder a cada um*/
+        }
+    } else if (scene == SCENES.SCENE_FOUR) {
+        sceneFourObjects = new Array(OBJECTS_PER_SCENE.SCENE_FOUR);
+
+        for (let i = 0; i < sceneFourObjects.length; i++) {
+            sceneFourObjects[i] = new Array(3); /* GLTF_OBJECTS_IDENTIFIER para aceder a cada um*/
         }
     }
 
@@ -894,6 +917,363 @@ function CreateSceneThree() {
     });
 }
 
+function CreateSceneFour() {
+
+
+    /* Inicializar o Array de Objectos e o check de cada um deles */
+    InitializeSceneObjetcsArray(SCENES.SCENE_FOUR)
+
+    /* Criar Scene */
+    scene4 = new THREE.Scene();
+
+
+    /* Criar Camera */
+    camera4 = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera4.position.set(-2.230, 4.030, 8.310);
+
+    scene4.add(camera4);
+
+    /*
+        ##################################
+        #     Controlos do Three         #
+        ##################################
+        */
+    // let controls = new THREE.OrbitControls(camera4);
+    //controls.addEventListener('change', function() { renderer.render(scene4, camera4); });
+
+
+    /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
+    const domEvents = new THREEx.DomEvents(camera4, renderer.domElement);
+
+
+    /* Criar Luz Ambiente */
+    const ambient = new THREE.AmbientLight(0x404040, 2);
+    scene4.add(ambient);
+
+    /* Criar Luz Direcional */
+    const light = new THREE.DirectionalLight(0xffffff, 2);
+    light.position.set(50, 50, 100);
+    scene4.add(light);
+
+    /* Carregar a sala */
+    let loader = new THREE.GLTFLoader();
+    loader.load("./GLTFs/sceneLevelFour/quarto/scene_bed.gltf", function(gltf) {
+        scene4.add(gltf.scene);
+        gltf.scene.position.set(-5.390, -0.290, -4.640);
+        gltf.scene.rotation.set(0, 0.5, 0);
+    });
+
+
+    const loaderFont = new THREE.FontLoader();
+
+    loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
+
+        /* Adicionar o titulo de objectos perdidos */
+        let textoObjectosPerdidosMesh = new THREE.Mesh(CreateTextGeometry("Objectos Perdidos:", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectosPerdidosMesh.position.set(5, 10, 0);
+        scene4.add(textoObjectosPerdidosMesh);
+
+        /* Texto do Almofada */
+        let textoObjectoPerdido1Mesh = new THREE.Mesh(CreateTextGeometry("Almofada", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido1Mesh.position.set(5, 8.5, 0);
+        scene4.add(textoObjectoPerdido1Mesh);
+
+        /* Check do Almofada encontrado */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 8.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do Braço */
+        let textoObjectoPerdido2Mesh = new THREE.Mesh(CreateTextGeometry("Braço Robot", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido2Mesh.position.set(5, 7.5, 0);
+        scene4.add(textoObjectoPerdido2Mesh);
+
+        /* Check do Braço encontrado */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 7.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do Camera */
+        let textoObjectoPerdido3Mesh = new THREE.Mesh(CreateTextGeometry("Camara de vigilançia", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido3Mesh.position.set(5, 6.5, 0);
+        scene4.add(textoObjectoPerdido3Mesh);
+
+        /* Check do Camera */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 6.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+
+        /* Texto do GAMEBOY */
+        let textoObjectoPerdido4Mesh = new THREE.Mesh(CreateTextGeometry("Game Boy", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido4Mesh.position.set(5, 5.5, 0);
+        scene4.add(textoObjectoPerdido4Mesh);
+
+        /* Check do Frasco */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 5.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do Katana */
+        let textoObjectoPerdido5Mesh = new THREE.Mesh(CreateTextGeometry("Katana", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido5Mesh.position.set(5, 4.5, 0);
+        scene4.add(textoObjectoPerdido5Mesh);
+
+        /* Check doKatana */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 4.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do Mascara */
+        let textoObjectoPerdido6Mesh = new THREE.Mesh(CreateTextGeometry("Mascara", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido6Mesh.position.set(5, 3.5, 0);
+        scene4.add(textoObjectoPerdido6Mesh);
+
+        /* Check do Mascara */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 3.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do Monitor */
+        let textoObjectoPerdido7Mesh = new THREE.Mesh(CreateTextGeometry("Secador", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido7Mesh.position.set(5, 2.5, 0);
+        scene4.add(textoObjectoPerdido7Mesh);
+
+        /* Check do Monitor */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 2.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do Pistola */
+        let textoObjectoPerdido8Mesh = new THREE.Mesh(CreateTextGeometry("Pistola", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido8Mesh.position.set(5, 1.5, 0);
+        scene4.add(textoObjectoPerdido8Mesh);
+
+        /* Check do Pistola */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 1.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do Pokeball */
+        let textoObjectoPerdido9Mesh = new THREE.Mesh(CreateTextGeometry("PokeBall", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido9Mesh.position.set(5, 1.0, 0);
+        scene4.add(textoObjectoPerdido9Mesh);
+
+        /* Check do Pokeball */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 1.0, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+        /* Texto do VR */
+        let textoObjectoPerdido10Mesh = new THREE.Mesh(CreateTextGeometry("Oculos VR", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
+        textoObjectoPerdido10Mesh.position.set(5, 0.5, 0);
+        scene4.add(textoObjectoPerdido10Mesh);
+
+        /* Check do Peruca */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 0.5, 0);
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
+
+    });
+
+
+    loader.load("./GLTFs/sceneLevelFour/almofada/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(-9.559, 0.890, -3.890);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-3.217, 0, 0);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.500, 0.500, 0.500)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.ALMOFADA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+
+    });
+
+    loader.load("./GLTFs/sceneLevelFour/braço/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(2.060, 1.280, -9.990);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.517, 0, 3.142);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.050, 0.050, 0.050)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.BRAÇO][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+
+    });
+
+
+
+    loader.load("./GLTFs/sceneLevelFour/camera/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(0.990, 9.520, -15.140);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.277, 0, -0.129);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.500, 0.500, 0.500)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.CAMERA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+
+    loader.load("./GLTFs/sceneLevelFour/game_Boy/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(-1.140, 1.020, 0);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.517, 0, 3.142);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(5, 5, 5)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.GAMEBOY][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+
+    loader.load("./GLTFs/sceneLevelFour/katana/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(7.020, 6.720, -4.500);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.590, 0.180, 2.081);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.500, 0.500, 0.500)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.KATANA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+
+    loader.load("./GLTFs/sceneLevelFour/mascara/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(-4.240, 8.740, -12.580);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-4.682, 0, -3.572);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.002, 0.002, 0.002)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.MASCARA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+
+
+    loader.load("./GLTFs/sceneLevelFour/monitor/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(-13.760, 3.350, -7.890);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.670, -0.020, 0.050);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(1, 1, 1)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.MONITOR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+
+    loader.load("./GLTFs/sceneLevelFour/pistola/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(2.660, 7.080, -12.800);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.517, 0, 1.981);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.005, 0.005, 0.005)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.PISTOLA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+
+    loader.load("./GLTFs/sceneLevelFour/pokeball/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(-7.630, 1.320, -9.070);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.517, 0, -3.142);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.001, 0.001, 0.001)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+
+    loader.load("./GLTFs/sceneLevelFour/vr/scene.gltf", function(gltf) {
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
+
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(-2.810, 1.480, -12.130);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.517, 0.070, -1.059);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.500, 0.500, 0.500)
+        scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.SCENE]);
+
+        domEvents.addEventListener(sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
+            if (currentScene === SCENES.SCENE_FOUR) {
+                currentSceneObjectosFound++
+                scene4.remove(sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.SCENE])
+                sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = true
+            }
+        });
+    });
+}
+
 
 function animate() {
     requestAnimationFrame(animate);
@@ -915,6 +1295,13 @@ function animate() {
         }
     } else if (currentScene === SCENES.SCENE_THREE) {
         renderer.render(scene3, camera3);
+        if (currentSceneObjectosFound == sceneThreeObjects.length) {
+            CreateSceneFour();
+            currentSceneObjectosFound = 0 // restart para a proxima scene
+            setTimeout(function() { currentScene = SCENES.SCENE_FOUR }, 2000);
+        }
+    } else if (currentScene === SCENES.SCENE_FOUR) {
+        renderer.render(scene4, camera4);
     }
 }
 
@@ -931,9 +1318,12 @@ function onWindowResize() {
     } else if (currentScene === SCENES.SCENE_THREE) {
         camera3.aspect = canvas.width / canvas.height;
         camera3.updateProjectionMatrix();
-
-        renderer.setSize(canvas.width, canvas.height);
+    } else if (currentScene === SCENES.SCENE_FOUR) {
+        camera4.aspect = canvas.width / canvas.height;
+        camera4.updateProjectionMatrix();
     }
+    renderer.setSize(canvas.width, canvas.height);
+
 }
 
 window.addEventListener("resize", onWindowResize);
