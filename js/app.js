@@ -698,23 +698,23 @@ function CreateSceneThree() {
 
         /* Texto do Tesoura */
         let textoObjectoPerdido9Mesh = new THREE.Mesh(CreateTextGeometry("Tesoura", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
-        textoObjectoPerdido9Mesh.position.set(5, 1.0, 0);
+        textoObjectoPerdido9Mesh.position.set(5, 0.5, 0);
         scene3.add(textoObjectoPerdido9Mesh);
 
         /* Check do tesoura */
         sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
-        sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 1.0, 0);
+        sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 0.5, 0);
         scene3.add(sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
         sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
         /* Texto do Peruca */
         let textoObjectoPerdido10Mesh = new THREE.Mesh(CreateTextGeometry("Estatua", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
-        textoObjectoPerdido10Mesh.position.set(5, 0.5, 0);
+        textoObjectoPerdido10Mesh.position.set(5, -0.5, 0);
         scene3.add(textoObjectoPerdido10Mesh);
 
         /* Check do Peruca */
         sceneThreeObjects[SCENE_THREE_OBJECTS.WIG][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
-        sceneThreeObjects[SCENE_THREE_OBJECTS.WIG][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 0.5, 0);
+        sceneThreeObjects[SCENE_THREE_OBJECTS.WIG][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, -0.5, 0);
         scene3.add(sceneThreeObjects[SCENE_THREE_OBJECTS.WIG][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
         sceneThreeObjects[SCENE_THREE_OBJECTS.WIG][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
@@ -881,7 +881,7 @@ function CreateSceneThree() {
         sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.OBJECT] = gltf.scene.children[0] /* Children que contem o objecto para podermos controlar a posicao e rotacao */
         sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.SCENE] = gltf.scene /* Scene GLTF para podermos marcar como visible ou invisivel */
 
-        sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(13.790, -2.380, -14.850);
+        sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.OBJECT].position.set(13.790, 3.380, -14.850);
         sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.OBJECT].rotation.set(-1.517, 0, -3.142);
         sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.OBJECT].scale.set(0.500, 0.500, 0.500)
         sceneThreeObjects[SCENE_THREE_OBJECTS.TESOURA][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
@@ -1064,23 +1064,23 @@ function CreateSceneFour() {
 
         /* Texto do Pokeball */
         let textoObjectoPerdido9Mesh = new THREE.Mesh(CreateTextGeometry("PokeBall", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
-        textoObjectoPerdido9Mesh.position.set(5, 1.0, 0);
+        textoObjectoPerdido9Mesh.position.set(5, 0.5, 0);
         scene4.add(textoObjectoPerdido9Mesh);
 
         /* Check do Pokeball */
         sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
-        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 1.0, 0);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 0.5, 0);
         scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
         sceneFourObjects[SCENE_FOUR_OBJECTS.POKEBALL][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
         /* Texto do VR */
         let textoObjectoPerdido10Mesh = new THREE.Mesh(CreateTextGeometry("Oculos VR", font, 0.4, 0.01), CreateTextBasicMaterial(0x191919));
-        textoObjectoPerdido10Mesh.position.set(5, 0.5, 0);
+        textoObjectoPerdido10Mesh.position.set(5, -0.5, 0);
         scene4.add(textoObjectoPerdido10Mesh);
 
         /* Check do Peruca */
         sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH] = new THREE.Mesh(CreateTextGeometry("X", font, 0.4, 0.01), CreateTextBasicMaterial(0xff3535));
-        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, 0.5, 0);
+        sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].position.set(4, -0.5, 0);
         scene4.add(sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH]);
         sceneFourObjects[SCENE_FOUR_OBJECTS.VR][GLTF_OBJECTS_IDENTIFIER.CHECK_MESH].visible = false
 
