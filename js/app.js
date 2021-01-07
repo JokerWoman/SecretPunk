@@ -1,20 +1,35 @@
-let camera1, camera2, camera3, camera4;
+let camera1, camera2, camera3, camera4, cameraWin, cameraLost;
 let renderer;
-let scene1, scene2, scene3, scene4;
+let scene1, scene2, scene3, scene4, sceneWin, sceneLost;
+
+let myfont = null
+
+let tempoMesh = null
+let timer = null
+let timerValue = 0
+
+let SCENES_TIMEOUTS = {
+    SCENE_ONE: 60,
+    SCENE_TWO: 90,
+    SCENE_THREE: 120,
+    SCENE_FOUR: 150,
+}
+
 
 let SCENES = {
     SCENE_ONE: 1,
     SCENE_TWO: 2,
     SCENE_THREE: 3,
-    SCENE_FOUR: 4
+    SCENE_FOUR: 4,
+    SCENE_WIN: 5,
+    SCENE_LOST: 6
 };
 
 let OBJECTS_PER_SCENE = {
     SCENE_ONE: 5,
     SCENE_TWO: 5,
     SCENE_THREE: 10,
-    SCENE_FOUR: 12
-
+    SCENE_FOUR: 10
 };
 
 let SCENE_ONE_OBJECTS = {
@@ -106,13 +121,10 @@ function InitializeSceneObjetcsArray(scene) {
             sceneFourObjects[i] = new Array(3); /* GLTF_OBJECTS_IDENTIFIER para aceder a cada um*/
         }
     }
-
-
 }
 
 function init() {
     canvas = document.getElementById("webGLCanvas");
-
     UpdateCanvasFullScreen()
 
     /* Renderer */
@@ -120,7 +132,6 @@ function init() {
     renderer.setSize(canvas.width, canvas.height);
 
     CreateSceneOne();
-
 
     animate();
 }
@@ -137,7 +148,72 @@ function CreateTextBasicMaterial(cor) {
     return new THREE.MeshBasicMaterial({ color: cor });
 }
 
+function ResetTimerLostGame() {
+    timerValue = 0
+}
+
+function StartTimerLostGame() {
+    StopTimerLostGame()
+    ResetTimerLostGame()
+    timer = setInterval(UpdateTimerLostGame, 1000); /* 1 second each time */
+    console.log("Começar timer periodico!")
+}
+
+function UpdateTimerLostGame() {
+    let perdeuJogo = false
+
+    if (currentScene !== SCENES.SCENE_LOST && currentScene !== SCENES.SCENE_WIN) {
+        DesenharTempo()
+        timerValue += 1
+        if ((currentScene === SCENES.SCENE_ONE) && (timerValue >= SCENES_TIMEOUTS.SCENE_ONE)) {
+            perdeuJogo = true
+        } else if ((currentScene === SCENES.SCENE_TWO) && (timerValue >= SCENES_TIMEOUTS.SCENE_TWO)) {
+            perdeuJogo = true
+        } else if ((currentScene === SCENES.SCENE_THREE) && (timerValue >= SCENES_TIMEOUTS.SCENE_THREE)) {
+            perdeuJogo = true
+        } else if ((currentScene === SCENES.SCENE_FOUR) && (timerValue >= SCENES_TIMEOUTS.SCENE_FOUR)) {
+            perdeuJogo = true
+        }
+    }
+
+    if (perdeuJogo === true) {
+        LostGame()
+    }
+}
+
+function StopTimerLostGame() {
+    if (timer) {
+        clearInterval(timer)
+        console.log("Stop timer periodico!")
+    }
+
+}
+
+function LostGame() {
+    console.log("Perdeu!")
+    CreateSceneLost();
+    currentSceneObjectosFound = 0 // restart para a proxima scene
+    currentScene = SCENES.SCENE_LOST
+}
+
+function DesenharTempo() {
+    let tempoMensagem = "Tempo decorrido: " + timerValue
+    if (myfont !== null) {
+        let geometry = CreateTextGeometry("Tempo decorrido: " + timerValue, myfont, 0.6, 0.01)
+
+        if (tempoMesh === null) {
+            tempoMesh = new THREE.Mesh(geometry, CreateTextBasicMaterial(0x191919));
+            tempoMesh.position.set(-5, 10, 0);
+        } else {
+            tempoMesh.geometry = geometry;
+        }
+    }
+}
+
+
 function CreateSceneOne() {
+    StartTimerLostGame()
+
     /* Inicializar o Array de Objectos e o check de cada um deles */
     InitializeSceneObjetcsArray(SCENES.SCENE_ONE)
 
@@ -176,6 +252,11 @@ function CreateSceneOne() {
     const loaderFont = new THREE.FontLoader();
 
     loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
+        myfont = font
+            /* Criar o texto do tempo e adicionar á scene */
+        DesenharTempo()
+        scene1.add(tempoMesh);
+
         /* Adicionar o titulo de objectos perdidos */
         let textoObjectosPerdidosMesh = new THREE.Mesh(CreateTextGeometry("Objectos Perdidos:", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
         textoObjectosPerdidosMesh.position.set(5, 10, 0);
@@ -343,6 +424,7 @@ function CreateSceneOne() {
 }
 
 function CreateSceneTwo() {
+    StartTimerLostGame()
 
     /* Inicializar o Array de Objectos e o check de cada um deles */
     InitializeSceneObjetcsArray(SCENES.SCENE_TWO)
@@ -391,6 +473,11 @@ function CreateSceneTwo() {
     const loaderFont = new THREE.FontLoader();
 
     loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
+        myfont = font
+
+        /* Criar o texto do tempo e adicionar á scene */
+        DesenharTempo()
+        scene2.add(tempoMesh);
 
         /* Adicionar o titulo de objectos perdidos */
         let textoObjectosPerdidosMesh = new THREE.Mesh(CreateTextGeometry("Objectos Perdidos:", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
@@ -553,6 +640,7 @@ function CreateSceneTwo() {
 }
 
 function CreateSceneThree() {
+    StartTimerLostGame()
 
     /* Inicializar o Array de Objectos e o check de cada um deles */
     InitializeSceneObjetcsArray(SCENES.SCENE_THREE)
@@ -601,6 +689,11 @@ function CreateSceneThree() {
     const loaderFont = new THREE.FontLoader();
 
     loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
+        myfont = font
+
+        /* Criar o texto do tempo e adicionar á scene */
+        DesenharTempo()
+        scene3.add(tempoMesh);
 
         /* Adicionar o titulo de objectos perdidos */
         let textoObjectosPerdidosMesh = new THREE.Mesh(CreateTextGeometry("Objectos Perdidos:", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
@@ -918,7 +1011,7 @@ function CreateSceneThree() {
 }
 
 function CreateSceneFour() {
-
+    StartTimerLostGame()
 
     /* Inicializar o Array de Objectos e o check de cada um deles */
     InitializeSceneObjetcsArray(SCENES.SCENE_FOUR)
@@ -967,6 +1060,11 @@ function CreateSceneFour() {
     const loaderFont = new THREE.FontLoader();
 
     loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
+        myfont = font
+
+        /* Criar o texto do tempo e adicionar á scene */
+        DesenharTempo()
+        scene4.add(tempoMesh);
 
         /* Adicionar o titulo de objectos perdidos */
         let textoObjectosPerdidosMesh = new THREE.Mesh(CreateTextGeometry("Objectos Perdidos:", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
@@ -1275,20 +1373,128 @@ function CreateSceneFour() {
 }
 
 
+function CreateSceneWin() {
+    StopTimerLostGame();
+
+    /* Criar Scene */
+    sceneWin = new THREE.Scene();
+
+    /* Criar Camera */
+    cameraWin = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    cameraWin.position.set(-2.230, 4.030, 8.310);
+
+    sceneWin.add(cameraWin);
+
+    //let controls = new THREE.OrbitControls(camera);
+    //controls.addEventListener('change', function() { renderer.render(scene, camera); });
+    /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
+    const domEvents = new THREEx.DomEvents(cameraWin, renderer.domElement);
+
+    /* Criar Luz Ambiente */
+    const ambient = new THREE.AmbientLight(0x404040, 2);
+    sceneWin.add(ambient);
+
+    /* Criar Luz Direcional */
+    const light = new THREE.DirectionalLight(0xffffff, 2);
+    light.position.set(50, 50, 100);
+    sceneWin.add(light);
+
+    /* Carregar a sala */
+    let loader = new THREE.GLTFLoader();
+    loader.load("./GLTFs/sceneLevelWin/trofeu/scene.gltf", function(gltf) {
+        sceneWin.add(gltf.scene);
+        gltf.scene.position.set(-5.390, -0.290, -4.640);
+
+        domEvents.addEventListener(gltf.scene.children[0], 'dblclick', event => {
+            if (currentScene === SCENES.SCENE_WIN) {
+                CreateSceneOne();
+                currentSceneObjectosFound = 0 // restart para a proxima scene
+                setTimeout(function() { currentScene = SCENES.SCENE_ONE }, 2000);
+            }
+        });
+    });
+
+    /* Carregar a fonte e alguns textos */
+    const loaderFont = new THREE.FontLoader();
+
+    loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
+        /* Adicionar o titulo de objectos perdidos */
+        let textMesh = new THREE.Mesh(CreateTextGeometry("Ganhou!", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
+        textMesh.position.set(0, 10, 0);
+        sceneWin.add(textMesh);
+    });
+
+}
+
+
+function CreateSceneLost() {
+    StopTimerLostGame();
+
+    /* Criar Scene */
+    sceneLost = new THREE.Scene();
+
+    /* Criar Camera */
+    cameraLost = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    cameraLost.position.set(-2.230, 4.030, 8.310);
+
+    sceneLost.add(cameraLost);
+
+    //let controls = new THREE.OrbitControls(camera);
+    //controls.addEventListener('change', function() { renderer.render(scene, camera); });
+    /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
+    const domEvents = new THREEx.DomEvents(cameraLost, renderer.domElement);
+
+    /* Criar Luz Ambiente */
+    const ambient = new THREE.AmbientLight(0x404040, 2);
+    sceneLost.add(ambient);
+
+    /* Criar Luz Direcional */
+    const light = new THREE.DirectionalLight(0xffffff, 2);
+    light.position.set(50, 50, 100);
+    sceneLost.add(light);
+
+    /* Carregar a sala */
+    let loader = new THREE.GLTFLoader();
+    loader.load("./GLTFs/sceneLevelWin/trofeu/scene.gltf", function(gltf) {
+        sceneLost.add(gltf.scene);
+        gltf.scene.position.set(-5.390, -0.290, -4.640);
+
+        domEvents.addEventListener(gltf.scene.children[0], 'dblclick', event => {
+            if (currentScene === SCENES.SCENE_LOST) {
+                CreateSceneOne();
+                currentSceneObjectosFound = 0 // restart para a proxima scene
+                setTimeout(function() { currentScene = SCENES.SCENE_ONE }, 2000);
+            }
+        });
+    });
+
+    /* Carregar a fonte e alguns textos */
+    const loaderFont = new THREE.FontLoader();
+
+    loaderFont.load('./fonts/Roboto_Regular.json', function(font) {
+        /* Adicionar o titulo de objectos perdidos */
+        let textMesh = new THREE.Mesh(CreateTextGeometry("Perdeu!", font, 0.6, 0.01), CreateTextBasicMaterial(0x191919));
+        textMesh.position.set(0, 10, 0);
+        sceneLost.add(textMesh);
+    });
+
+}
+
 function animate() {
     requestAnimationFrame(animate);
 
     if (currentScene === SCENES.SCENE_ONE) {
         renderer.render(scene1, camera1);
         if (currentSceneObjectosFound == sceneOneObjects.length) {
+            console.log("Level 1 Completed!")
             CreateSceneTwo();
             currentSceneObjectosFound = 0 // restart para a proxima scene
             setTimeout(function() { currentScene = SCENES.SCENE_TWO }, 2000);
         }
     } else if (currentScene === SCENES.SCENE_TWO) {
         renderer.render(scene2, camera2);
-
         if (currentSceneObjectosFound == sceneTwoObjects.length) {
+            console.log("Level 2 Completed!")
             CreateSceneThree();
             currentSceneObjectosFound = 0 // restart para a proxima scene
             setTimeout(function() { currentScene = SCENES.SCENE_THREE }, 2000);
@@ -1296,12 +1502,23 @@ function animate() {
     } else if (currentScene === SCENES.SCENE_THREE) {
         renderer.render(scene3, camera3);
         if (currentSceneObjectosFound == sceneThreeObjects.length) {
+            console.log("Level 3 Completed!")
             CreateSceneFour();
             currentSceneObjectosFound = 0 // restart para a proxima scene
             setTimeout(function() { currentScene = SCENES.SCENE_FOUR }, 2000);
         }
     } else if (currentScene === SCENES.SCENE_FOUR) {
         renderer.render(scene4, camera4);
+        if (currentSceneObjectosFound == sceneFourObjects.length) {
+            console.log("Level 4 Completed!")
+            CreateSceneWin();
+            currentSceneObjectosFound = 0 // restart para a proxima scene
+            setTimeout(function() { currentScene = SCENES.SCENE_WIN }, 2000);
+        }
+    } else if (currentScene === SCENES.SCENE_WIN) {
+        renderer.render(sceneWin, cameraWin);
+    } else if (currentScene === SCENES.SCENE_LOST) {
+        renderer.render(sceneLost, cameraLost);
     }
 }
 
@@ -1321,6 +1538,12 @@ function onWindowResize() {
     } else if (currentScene === SCENES.SCENE_FOUR) {
         camera4.aspect = canvas.width / canvas.height;
         camera4.updateProjectionMatrix();
+    } else if (currentScene === SCENES.SCENE_WIN) {
+        cameraWin.aspect = canvas.width / canvas.height;
+        cameraWin.updateProjectionMatrix();
+    } else if (currentScene === SCENES.SCENE_LOST) {
+        cameraLost.aspect = canvas.width / canvas.height;
+        cameraLost.updateProjectionMatrix();
     }
     renderer.setSize(canvas.width, canvas.height);
 
