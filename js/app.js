@@ -2,8 +2,14 @@ let camera1, camera2, camera3, camera4, cameraWin, cameraLost, cameraLoading;
 let renderer;
 let scene1, scene2, scene3, scene4, sceneWin, sceneLost, sceneLoading;
 
-let loader = 0
+/* relogio e mixer da animaçao de loading */
+let clock;
 
+/* animations */
+let mixerLoading = null
+let mixerPapelHigienico = null
+
+let loader = 0
 let myfont = null
 
 let tempo1Mesh = null
@@ -128,6 +134,8 @@ function init() {
     canvas = document.getElementById("webGLCanvas");
     UpdateCanvasFullScreen()
     InitializeSceneObjetcsArray()
+    clock = new THREE.Clock();
+
 
     /* Renderer */
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -183,10 +191,16 @@ function CreateSceneLoading()
 
  /* Carregar a sala */
  let loader = new THREE.GLTFLoader();
- loader.load("./GLTFs/sceneLevelWin/trofeu/scene.gltf", function(gltf) {
+ loader.load("./GLTFs/sceneLoading/loading/scene.gltf", function(gltf) {
     sceneLoading.add(gltf.scene);
-     gltf.scene.position.set(-5.390, -0.290, -4.640);
-     gltf.scene.rotation.set(0, 0.5, 0);
+     gltf.scene.position.set(-1.960,3.930,0);
+     gltf.scene.scale.set(2,2,2);
+
+    /* Animação do loading */
+    mixerLoading = new THREE.AnimationMixer(gltf.scene);
+    gltf.animations.forEach((clip) =>{
+        mixerLoading.clipAction(clip).play();
+    })
  });
 
 
@@ -873,6 +887,14 @@ function CreateSceneThree() {
         sceneThreeObjects[SCENE_THREE_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.SCENE].position.set(-5.390, 0, 0);
         scene3.add(sceneThreeObjects[SCENE_THREE_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.SCENE]);
 
+
+        /* Animação do papel higienico */
+        mixerPapelHigienico = new THREE.AnimationMixer(gltf.scene);
+        gltf.animations.forEach((clip) =>{
+            mixerPapelHigienico.clipAction(clip).play();
+        })
+
+
         domEvents.addEventListener(sceneThreeObjects[SCENE_THREE_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.OBJECT], 'click', event => {
             if (currentScene === SCENES.SCENE_THREE) {
                 sceneThreeObjects[SCENE_THREE_OBJECTS.PAPEL][GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] = true
@@ -1357,7 +1379,7 @@ function IsCurrentLevelDone()
 
 
 function animate() {
-    requestAnimationFrame(animate);
+    var delta = clock.getDelta()
 
     if (currentScene === SCENES.SCENE_ONE) {
         DesenharTempo()
@@ -1376,6 +1398,11 @@ function animate() {
             currentScene = SCENES.SCENE_THREE;
         }
     } else if (currentScene === SCENES.SCENE_THREE) {
+        if(mixerPapelHigienico !== null)
+        {
+            /* Refresh animation do loading */
+            mixerPapelHigienico.update(delta)
+        }
         DesenharTempo()
         renderer.render(scene3, camera3);
         if (IsCurrentLevelDone() === true) {
@@ -1397,8 +1424,15 @@ function animate() {
         renderer.render(sceneLost, cameraLost);
     }
     else if (currentScene === SCENES.SCENE_LOADING) {
+        if(mixerLoading !== null)
+        {
+            /* Refresh animation do loading */
+            mixerLoading.update(delta)
+        }
         renderer.render(sceneLoading, cameraLoading);
     }
+
+    requestAnimationFrame(animate);
 }
 
 function onWindowResize() {
