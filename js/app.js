@@ -1,4 +1,4 @@
-let camera1, camera2, camera3, camera4, cameraWin, cameraLost, cameraLoading;
+let camera = []
 let renderer;
 let scene1, scene2, scene3, scene4, sceneWin, sceneLost, sceneLoading;
 
@@ -28,7 +28,6 @@ let SCENES_TIMEOUTS = {
     SCENE_FOUR: 150,
 }
 
-
 let SCENES = {
     SCENE_ONE: 1,
     SCENE_TWO: 2,
@@ -37,7 +36,6 @@ let SCENES = {
     SCENE_WIN: 5,
     SCENE_LOST: 6,
     SCENE_LOADING: 7
-
 };
 
 let OBJECTS_PER_SCENE = {
@@ -95,9 +93,10 @@ let sceneFourObjects = []
 
 let currentScene = SCENES.SCENE_LOADING
 
-let canvas;
+let canvas
 
-function UpdateCanvasFullScreen() {
+function UpdateCanvasFullScreen(){
+    
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight
 }
@@ -128,14 +127,13 @@ function InitializeSceneObjetcsArray(scene) {
             sceneFourObjects[i] = new Array(4); /* GLTF_OBJECTS_IDENTIFIER para aceder a cada um*/
             sceneFourObjects[i][GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] = false
         }
-    }
+}
 
 function init() {
     canvas = document.getElementById("webGLCanvas");
     UpdateCanvasFullScreen()
     InitializeSceneObjetcsArray()
     clock = new THREE.Clock();
-
 
     /* Renderer */
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -170,15 +168,15 @@ function CreateSceneLoading()
  sceneLoading = new THREE.Scene();
 
  /* Criar Camera */
- cameraLoading = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
- cameraLoading.position.set(-2.230, 4.030, 8.310);
+ camera[6] = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+ camera[6].position.set(-2.230, 4.030, 8.310);
 
- sceneLoading.add(cameraLoading);
+ sceneLoading.add(camera[6]);
 
  //let controls = new THREE.OrbitControls(camera);
  //controls.addEventListener('change', function() { renderer.render(scene, camera); });
  /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
- const domEvents = new THREEx.DomEvents(camera1, renderer.domElement);
+ const domEvents = new THREEx.DomEvents(camera[6], renderer.domElement);
 
  /* Criar Luz Ambiente */
  const ambient = new THREE.AmbientLight(0x404040, 2);
@@ -281,15 +279,15 @@ function CreateSceneOne() {
     scene1 = new THREE.Scene();
 
     /* Criar Camera */
-    camera1 = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    camera1.position.set(-2.230, 4.030, 8.310);
+    camera[0] = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera[0].position.set(-2.230, 4.030, 8.310);
 
-    scene1.add(camera1);
+    scene1.add(camera[0]);
 
     //let controls = new THREE.OrbitControls(camera);
     //controls.addEventListener('change', function() { renderer.render(scene, camera); });
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(camera1, renderer.domElement);
+    const domEvents = new THREEx.DomEvents(camera[0], renderer.domElement);
 
     /* Criar Luz Ambiente */
     const ambient = new THREE.AmbientLight(0x404040, 2);
@@ -493,10 +491,10 @@ function CreateSceneTwo() {
 
 
     /* Criar Camera */
-    camera2 = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    camera2.position.set(-2.230, 4.030, 8.310);
+    camera[1] = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera[1].position.set(-2.230, 4.030, 8.310);
 
-    scene2.add(camera2);
+    scene2.add(camera[1]);
 
     /*
         ##################################
@@ -508,7 +506,7 @@ function CreateSceneTwo() {
 
 
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(camera2, renderer.domElement);
+    const domEvents = new THREEx.DomEvents(camera[1], renderer.domElement);
 
 
     /* Criar Luz Ambiente */
@@ -711,12 +709,11 @@ function CreateSceneThree() {
     /* Criar Scene */
     scene3 = new THREE.Scene();
 
-
     /* Criar Camera */
-    camera3 = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    camera3.position.set(-2.230, 4.030, 8.310);
+    camera[2] = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera[2].position.set(-2.230, 4.030, 8.310);
 
-    scene3.add(camera3);
+    scene3.add(camera[2]);
 
     /*
         ##################################
@@ -728,7 +725,7 @@ function CreateSceneThree() {
 
 
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(camera3, renderer.domElement);
+    const domEvents = new THREEx.DomEvents(camera[2], renderer.domElement);
 
 
     /* Criar Luz Ambiente */
@@ -973,10 +970,10 @@ function CreateSceneFour() {
 
 
     /* Criar Camera */
-    camera4 = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    camera4.position.set(-2.230, 4.030, 8.310);
+    camera[3] = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera[3].position.set(-2.230, 4.030, 8.310);
 
-    scene4.add(camera4);
+    scene4.add(camera[3]);
 
     /*
         ##################################
@@ -988,7 +985,7 @@ function CreateSceneFour() {
 
 
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(camera4, renderer.domElement);
+    const domEvents = new THREEx.DomEvents(camera[3], renderer.domElement);
 
 
     /* Criar Luz Ambiente */
@@ -1258,15 +1255,15 @@ function CreateSceneWin() {
     sceneWin = new THREE.Scene();
 
     /* Criar Camera */
-    cameraWin = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    cameraWin.position.set(-2.230, 4.030, 8.310);
+    camera[4] = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera[4].position.set(-2.230, 4.030, 8.310);
 
-    sceneWin.add(cameraWin);
+    sceneWin.add(camera[4]);
 
     //let controls = new THREE.OrbitControls(camera);
     //controls.addEventListener('change', function() { renderer.render(scene, camera); });
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(cameraWin, renderer.domElement);
+    const domEvents = new THREEx.DomEvents(camera[4], renderer.domElement);
 
     /* Criar Luz Ambiente */
     const ambient = new THREE.AmbientLight(0x404040, 2);
@@ -1313,15 +1310,15 @@ function CreateSceneLost() {
     sceneLost = new THREE.Scene();
 
     /* Criar Camera */
-    cameraLost = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
-    cameraLost.position.set(-2.230, 4.030, 8.310);
+    camera[5] = new THREE.PerspectiveCamera(85, canvas.width / canvas.height, 1, 1000);
+    camera[5].position.set(-2.230, 4.030, 8.310);
 
-    sceneLost.add(cameraLost);
+    sceneLost.add(camera[5]);
 
     //let controls = new THREE.OrbitControls(camera);
     //controls.addEventListener('change', function() { renderer.render(scene, camera); });
     /* Adicionar a possibilidade de mapear eventos dom a elementos 3D */
-    const domEvents = new THREEx.DomEvents(cameraLost, renderer.domElement);
+    const domEvents = new THREEx.DomEvents(camera[5], renderer.domElement);
 
     /* Criar Luz Ambiente */
     const ambient = new THREE.AmbientLight(0x404040, 2);
@@ -1362,74 +1359,134 @@ function CreateSceneLost() {
 }
 
 
-function IsCurrentLevelDone()
-{
+function IsCurrentLevelDone(){
+
     let status = false
-    if (currentScene === SCENES.SCENE_ONE) {
-        status = !sceneOneObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
-    } else if (currentScene === SCENES.SCENE_TWO) {
-        status = !sceneTwoObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
-    } else if (currentScene === SCENES.SCENE_THREE) {
-        status = !sceneThreeObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
-    } else if (currentScene === SCENES.SCENE_FOUR) {
-        status = !sceneFourObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
+
+    switch(currentScene){
+
+        case SCENES.SCENE_ONE:{
+
+            status = !sceneOneObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
+            break
+        }
+
+        case SCENES.SCENE_TWO:{
+
+            status = !sceneTwoObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
+            break
+        }
+
+        case SCENES.SCENE_THREE:{
+
+            status = !sceneThreeObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
+            break
+        }
+
+        case SCENES.SCENE_FOUR:{
+
+            status = !sceneFourObjects.some(item => item[GLTF_OBJECTS_IDENTIFIER.OBJECT_FOUND] === false)
+            break
+        }
+
     }
+
     return status
 }
 
-
 function animate() {
+
     var delta = clock.getDelta()
 
-    if (currentScene === SCENES.SCENE_ONE) {
-        DesenharTempo()
-        renderer.render(scene1, camera1);
-        if (IsCurrentLevelDone() === true) {
-            console.log("Level 1 Completed!")
-            StartTimerLostGame()
-            currentScene = SCENES.SCENE_TWO;
+    switch(currentScene){
+
+        case SCENES.SCENE_LOADING:{
+
+            if(mixerLoading !== null){
+
+                /* Refresh animation do loading */
+                mixerLoading.update(delta)
+            }
+            
+            renderer.render(sceneLoading, camera[6])
+
+            break;
         }
-    } else if (currentScene === SCENES.SCENE_TWO) {
-        DesenharTempo()
-        renderer.render(scene2, camera2);
-        if (IsCurrentLevelDone() === true) {
-            console.log("Level 2 Completed!")
-            StartTimerLostGame()
-            currentScene = SCENES.SCENE_THREE;
+
+        case SCENES.SCENE_ONE:{
+
+            DesenharTempo()
+            renderer.render(scene1, camera[0]);
+
+            if (IsCurrentLevelDone() === true) {
+                console.log("Level 1 Completed!")
+                StartTimerLostGame()
+                currentScene = SCENES.SCENE_TWO;
+            }
+
+            break;
         }
-    } else if (currentScene === SCENES.SCENE_THREE) {
-        if(mixerPapelHigienico !== null)
-        {
-            /* Refresh animation do loading */
-            mixerPapelHigienico.update(delta)
+
+        case SCENES.SCENE_TWO:{
+
+            DesenharTempo()
+            renderer.render(scene2, camera[1]);
+
+            if (IsCurrentLevelDone() === true) {
+
+                console.log("Level 2 Completed!")
+                StartTimerLostGame()
+                currentScene = SCENES.SCENE_THREE;
+            }
+
+            break;
         }
-        DesenharTempo()
-        renderer.render(scene3, camera3);
-        if (IsCurrentLevelDone() === true) {
-            console.log("Level 3 Completed!")
-            StartTimerLostGame()
-            currentScene = SCENES.SCENE_FOUR;
+
+        case SCENES.SCENE_THREE:{
+
+            if(mixerPapelHigienico !== null){
+
+                /* Refresh animation do loading */
+                mixerPapelHigienico.update(delta)
+            }
+
+            DesenharTempo()
+            renderer.render(scene3, camera[2]);
+
+            if (IsCurrentLevelDone() === true) {
+
+                console.log("Level 3 Completed!")
+                StartTimerLostGame()
+                currentScene = SCENES.SCENE_FOUR;
+            }
+
+            break;
         }
-    } else if (currentScene === SCENES.SCENE_FOUR) {
-        DesenharTempo()
-        renderer.render(scene4, camera4);
-        if (IsCurrentLevelDone() === true) {
-            console.log("Level 4 Completed!")
-            StopTimerLostGame();
-            currentScene = SCENES.SCENE_WIN;
+
+        case SCENES.SCENE_FOUR:{
+
+            DesenharTempo()
+            renderer.render(scene4, camera[3]);
+            if (IsCurrentLevelDone() === true) {
+                console.log("Level 4 Completed!")
+                StopTimerLostGame();
+                currentScene = SCENES.SCENE_WIN;
+            
+            break;
+            }
         }
-    } else if (currentScene === SCENES.SCENE_WIN) {
-        renderer.render(sceneWin, cameraWin);
-    } else if (currentScene === SCENES.SCENE_LOST) {
-        renderer.render(sceneLost, cameraLost);
-    }
-    else if (currentScene === SCENES.SCENE_LOADING) {
-        if(mixerLoading !== null)
-        {
-            /* Refresh animation do loading */
-            mixerLoading.update(delta)
+
+        case SCENES.SCENE_WIN:{
+
+            renderer.render(sceneWin, camera[4]);
+            break;
         }
-        renderer.render(sceneLoading, cameraLoading);
+
+        case SCENES.SCENE_LOST:{
+
+            renderer.render(sceneLost, camera[5]);
+            break;
+        }
     }
 
     requestAnimationFrame(animate);
@@ -1437,31 +1494,14 @@ function animate() {
 
 function onWindowResize() {
     /* Sempre que a janela for resized actualizamos o tamanho do canvas */
-    UpdateCanvasFullScreen()
 
-    if (currentScene === SCENES.SCENE_ONE) {
-        camera1.aspect = canvas.width / canvas.height;
-        camera1.updateProjectionMatrix();
-    } else if (currentScene === SCENES.SCENE_TWO) {
-        camera2.aspect = canvas.width / canvas.height;
-        camera2.updateProjectionMatrix();
-    } else if (currentScene === SCENES.SCENE_THREE) {
-        camera3.aspect = canvas.width / canvas.height;
-        camera3.updateProjectionMatrix();
-    } else if (currentScene === SCENES.SCENE_FOUR) {
-        camera4.aspect = canvas.width / canvas.height;
-        camera4.updateProjectionMatrix();
-    } else if (currentScene === SCENES.SCENE_WIN) {
-        cameraWin.aspect = canvas.width / canvas.height;
-        cameraWin.updateProjectionMatrix();
-    } else if (currentScene === SCENES.SCENE_LOST) {
-        cameraLost.aspect = canvas.width / canvas.height;
-        cameraLost.updateProjectionMatrix();
-    }
-    else if (currentScene === SCENES.SCENE_LOADING) {
-        cameraLoading.aspect = canvas.width / canvas.height;
-        cameraLoading.updateProjectionMatrix();
-    }
+    UpdateCanvasFullScreen()
+    
+    let activeCamera = camera[currentScene - 1]
+
+    activeCamera.aspect = canvas.width / canvas.height;
+    activeCamera.updateProjectionMatrix();
+
     renderer.setSize(canvas.width, canvas.height);
 
 }
